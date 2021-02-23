@@ -1,1 +1,1 @@
-# Boilerplate user's service written in Go
+# Boilerplate users service written in Go
