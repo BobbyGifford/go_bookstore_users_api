@@ -1,1 +1,1 @@
-# go_bookstore_users_api
+# Boilerplate user's service written in Go
