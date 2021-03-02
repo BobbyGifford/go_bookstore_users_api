@@ -6,6 +6,7 @@ import (
 	"github.com/BobbyGifford/go_bookstore_users_api/utils/errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 //	Input layer is controller package
@@ -29,5 +30,20 @@ func CreateUser(c *gin.Context) {
 }
 
 func GetUser(c *gin.Context) {
-	c.String(http.StatusNotImplemented, "not implemented")
+	userId, userError := strconv.ParseInt(c.Param("user_id"), 10, 64)
+
+	if userError != nil {
+		err := errors.NewBadRequestError("user id is not a number")
+		c.JSON(err.Status, err)
+		return
+	}
+
+	user, getErr := services.GetUser(userId)
+
+	if getErr != nil {
+		c.JSON(getErr.Status, getErr)
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
 }

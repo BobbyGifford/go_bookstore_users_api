@@ -4,7 +4,7 @@ import (
 	"github.com/BobbyGifford/go_bookstore_users_api/utils/errors"
 	"strings"
 )
-// Data transfer object
+// Data transfer object (Model)
 type User struct {
 	Id 			int64	`json:"id"`
 	FirstName 	string 	`json:"first_name"`

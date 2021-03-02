@@ -6,13 +6,13 @@ import (
 )
 
 // Data access object
-// Work with database here
+// Database logic
 
 var (
 	usersDB = make(map[int64]*User)
 )
 
-func (user *User) Ger () *errors.RestErr {
+func (user *User) Get () *errors.RestErr {
 	result := usersDB[user.Id]
 
 	if result == nil {
