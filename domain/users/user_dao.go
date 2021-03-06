@@ -3,6 +3,7 @@ package users
 import (
 	"fmt"
 	"github.com/BobbyGifford/go_bookstore_users_api/utils/errors"
+	"github.com/bobbygifford/go_bookstore_users_api/datasources/mysql/users_db"
 	"github.com/bobbygifford/go_bookstore_users_api/utils/date"
 )
 
@@ -14,6 +15,10 @@ var (
 )
 
 func (user *User) Get () *errors.RestErr {
+	if err := users_db.Client.Ping(); err != nil {
+		panic(err)
+	}
+
 	result := usersDB[user.Id]
 
 	if result == nil {
