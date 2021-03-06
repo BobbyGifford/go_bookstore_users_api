@@ -3,6 +3,7 @@ package users
 import (
 	"fmt"
 	"github.com/BobbyGifford/go_bookstore_users_api/utils/errors"
+	"github.com/bobbygifford/go_bookstore_users_api/utils/date"
 )
 
 // Data access object
@@ -36,6 +37,8 @@ func (user *User) Save() *errors.RestErr {
 		}
 		return errors.NewBadRequestError(fmt.Sprintf("user %d already exists", user.Id))
 	}
+
+	user.DateCreated = date.GetNowString()
 
 	// Save if user is not in DB
 	usersDB[user.Id] = user
