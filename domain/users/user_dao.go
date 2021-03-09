@@ -11,32 +11,30 @@ import (
 // Data access object
 // Database logic
 
-var (
-	usersDB = make(map[int64]*User)
-)
-
 const (
-	queryInsertUser = "INSERT INTO users(first_name, last_name, email, date_created) VALUES(?, ?, ?, ?);"
+	queryInsertUser  = "INSERT INTO users(first_name, last_name, email, date_created) VALUES(?, ?, ?, ?);"
 	indexUniqueEmail = "users.users_email_uindex"
+	queryGetUser     = "SELECT id, first_name, last_name, email, date_created FROM users WHERE id=?;"
+	queryUpdateUser  = "UPDATE users SET first_name=?, last_name=?, email=? WHERE id=?;"
 )
 
 func (user *User) Get() *errors.RestErr {
-	if err := users_db.Client.Ping(); err != nil {
-		panic(err)
+	stmt, err := users_db.Client.Prepare(queryGetUser)
+	if err != nil {
+		//logger.Error("error when trying to prepare get user statement", err)
+		//return rest_errors.NewInternalServerError("error when tying to get user", errors.New("database error"))
+		return errors.NewInternalServerError("error")
+
 	}
+	defer stmt.Close()
 
-	result := usersDB[user.Id]
+	result := stmt.QueryRow(user.Id)
 
-	if result == nil {
-		return errors.NewNotFoundError(fmt.Sprintf("user %d not found", user.Id))
+	if getErr := result.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.DateCreated); getErr != nil {
+		//logger.Error("error when trying to get user by id", getErr)
+		//return rest_errors.NewInternalServerError("error when tying to get user", errors.New("database error"))
+		return errors.NewInternalServerError("error")
 	}
-
-	user.Id = result.Id
-	user.FirstName = result.FirstName
-	user.LastName = result.LastName
-	user.Email = result.Email
-	user.DateCreated = result.DateCreated
-
 	return nil
 }
 
@@ -68,5 +66,19 @@ func (user *User) Save() *errors.RestErr {
 
 	user.Id = userId
 
+	return nil
+}
+
+func (user *User) Update() *errors.RestErr {
+	stmt, err := users_db.Client.Prepare(queryUpdateUser)
+	if err != nil {
+		return errors.NewInternalServerError("error when tying to update user")
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(user.FirstName, user.LastName, user.Email, user.Id)
+	if err != nil {
+		return errors.NewInternalServerError("error when tying to update user")
+	}
 	return nil
 }
