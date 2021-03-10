@@ -2,9 +2,9 @@ package users
 
 import (
 	"fmt"
-	"github.com/BobbyGifford/go_bookstore_users_api/utils/errors"
 	"github.com/bobbygifford/go_bookstore_users_api/datasources/mysql/users_db"
 	"github.com/bobbygifford/go_bookstore_users_api/utils/date_utils"
+	"github.com/bobbygifford/go_bookstore_users_api/utils/errors"
 	"strings"
 )
 
@@ -12,7 +12,7 @@ import (
 // Database logic
 
 const (
-	queryInsertUser  = "INSERT INTO users(first_name, last_name, email, date_created) VALUES(?, ?, ?, ?);"
+	queryInsertUser  = "INSERT INTO users(first_name, last_name, email, password, date_created) VALUES(?, ?, ?, ?, ?);"
 	indexUniqueEmail = "users.users_email_uindex"
 	queryGetUser     = "SELECT id, first_name, last_name, email, date_created FROM users WHERE id=?;"
 	queryUpdateUser  = "UPDATE users SET first_name=?, last_name=?, email=? WHERE id=?;"
@@ -48,7 +48,7 @@ func (user *User) Save() *errors.RestErr {
 
 	user.DateCreated = date_utils.GetNowString()
 
-	insertResult, insertErr := stmt.Exec(user.FirstName, user.LastName, user.Email, user.DateCreated)
+	insertResult, insertErr := stmt.Exec(user.FirstName, user.LastName, user.Email, user.Password, user.DateCreated)
 	if insertErr != nil {
 		if strings.Contains(insertErr.Error(), indexUniqueEmail) {
 			return errors.NewBadRequestError(fmt.Sprintf("email %s already exists", user.Email))
@@ -57,7 +57,7 @@ func (user *User) Save() *errors.RestErr {
 	}
 
 	// Same as above (Worse performance and no query validation)
-	// result, err := users_db.Client.Exec(queryInsertUser, user.FirstName, user.LastName, user.Email, user.DateCreated)
+	// insertResult, insertErr := users_db.Client.Exec(queryInsertUser, user.FirstName, user.LastName, user.Email, user.DateCreated)
 
 	userId, idErr := insertResult.LastInsertId()
 	if idErr != nil {

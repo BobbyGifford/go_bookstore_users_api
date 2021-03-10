@@ -1,7 +1,7 @@
 package users
 
 import (
-	"github.com/BobbyGifford/go_bookstore_users_api/utils/errors"
+	"github.com/bobbygifford/go_bookstore_users_api/utils/errors"
 	"strings"
 )
 
@@ -12,6 +12,8 @@ type User struct {
 	LastName    string `json:"last_name"`
 	Email       string `json:"email"`
 	DateCreated string `json:"date_created"`
+	Status      string `json:"status"`
+	Password    string `json:"password"`
 }
 
 // Validation method on User struct/type
@@ -23,5 +25,10 @@ func (user *User) Validate() *errors.RestErr {
 	if user.Email == "" {
 		return errors.NewBadRequestError("invalid email address")
 	}
+
+	if user.Password == "" {
+		return errors.NewBadRequestError("invalid password")
+	}
+
 	return nil
 }

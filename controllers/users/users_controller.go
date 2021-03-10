@@ -1,9 +1,9 @@
 package users
 
 import (
-	"github.com/BobbyGifford/go_bookstore_users_api/domain/users"
-	"github.com/BobbyGifford/go_bookstore_users_api/services"
-	"github.com/BobbyGifford/go_bookstore_users_api/utils/errors"
+	"github.com/bobbygifford/go_bookstore_users_api/domain/users"
+	"github.com/bobbygifford/go_bookstore_users_api/services"
+	"github.com/bobbygifford/go_bookstore_users_api/utils/errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -27,7 +27,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	result, saveErr := services.CreateUser(user)
+	result, saveErr := services.UsersService.CreateUser(user)
 
 	if saveErr != nil {
 		c.JSON(saveErr.Status, saveErr)
@@ -46,7 +46,7 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
-	user, getErr := services.GetUser(userId)
+	user, getErr := services.UsersService.GetUser(userId)
 
 	if getErr != nil {
 		c.JSON(getErr.Status, getErr)
@@ -74,7 +74,7 @@ func Update(c *gin.Context) {
 
 	isPartial := c.Request.Method == http.MethodPatch
 
-	result, err := services.UpdateUser(isPartial, user)
+	result, err := services.UsersService.UpdateUser(isPartial, user)
 	if err != nil {
 		c.JSON(err.Status, err)
 		return
